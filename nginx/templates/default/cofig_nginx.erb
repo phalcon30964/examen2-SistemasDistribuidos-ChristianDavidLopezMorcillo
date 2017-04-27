@@ -1,0 +1,16 @@
+worker_processes  1;
+events {
+   worker_connections 1024;
+}
+http {
+    upstream webservers {
+         server <%=@ipweb1%>;
+         server <%=@ipweb2%>;
+    }
+    server {
+        listen <%=@puerto_nginx%>;
+        location / {
+              proxy_pass http://webservers;
+        }
+    }
+}
