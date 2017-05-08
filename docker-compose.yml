@@ -1,0 +1,53 @@
+version: '2'
+
+services:
+  server1:
+    build:
+      context:  ./Web-Apache2
+      dockerfile: Dockerfile
+    environment:
+      - id_server=1
+    expose:
+      - "5000"
+    volumes:
+      - apache_volume:/apache_volume
+
+  server2:
+    build:
+      context:  ./Web-Apache2
+      dockerfile: Dockerfile
+    environment:
+       - id_server=2
+    expose:
+       - "5000"
+    volumes:
+       - apache_volume:/apache_volume
+
+  server3:
+    build:
+      context:  ./Web-Apache2
+      dockerfile: Dockerfile
+    environment:
+      - id_server=3
+    expose:
+      - "5000"
+    volumes:
+      - apache_volume:/apache_volume
+
+  nginx:
+    build:
+      context:  ./Nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    links:
+      - server1
+      - server2
+      - server3
+    volumes:
+      - nginx_volume:/nginx_volume
+
+volumes:
+    apache_volume:
+
+    nginx_volume:
