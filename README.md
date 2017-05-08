@@ -93,6 +93,111 @@ sudo service httpd start
 
 2. Escriba los archivos Dockerfile para cada uno de los servicios solicitados junto con los archivos fuente necesarios. Tenga en cuenta consultar buenas prácticas para la elaboración de archivos Dockerfile.
 
+<b> Para el balanceador de cargas: </b>
+
+El balanceador de cargas usado para esta infraestructura es nginx. Se crea una carpeta llamada Nginx que servirá de contexto para el contenedor de nginx. Este contenedor utiliza la imagen nginx del dockerhub. Se escribe el archivo Dockerfile que basicamente remplaza el archivo de configuracion del servicio nginx y luego inicia el servicio de nginx. También se escribe un archivo nginx.conf que se encarga de mapear las direcciones de los servidores web que atenderán peticiones.
+
+Se escribe el siguiente dockerfile:
+
+```Dockerfile
+# Se pasa la imagen base
+FROM nginx
+
+# Autor y mantenedor
+MAINTAINER Christian David Lopez Morcillo
+
+# Elminar el archivo de configuración por defecto de Nginx
+RUN rm -v /etc/nginx/nginx.conf
+
+# Copiar el archivo de configuración desde el directorio actual
+ADD nginx.conf /etc/nginx/
+
+# Agregar "daemon off;" en el comienzo de la configuración
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+
+# Setear el comando de defecto para ejecutar
+# cuando se crea un nuevo contenedor
+CMD service nginx start
+```
+
+ Y se escribe el  archivo de configuracion de nginx:
+ 
+ ```json
+ worker_processes 3;
+ 
+events { worker_connections 1024; }
+
+http {
+    sendfile on;
+    
+    # Lista de los servidores de aplicación
+    upstream app_servers {
+        server server1;
+        server server2;
+        server server3;
+    }
+    
+    # Configuración del servidor
+    server {
+
+	# Puerto de ejecución
+        listen 80;
+        
+        # Proxy de las conexiones
+        location / {
+            proxy_pass         http://app_servers;
+            proxy_redirect     off;
+            proxy_set_header   Host $host;
+            proxy_set_header   X-Real-IP $remote_addr;
+            proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header   X-Forwarded-Host $server_name;
+        }
+    }
+}
+```
+
+<b>Para el servidor web: </b>
+
+```Dockerfile
+FROM httpd
+MAINTAINER Christian Lopez
+
+ADD files/confd-0.10.0-linux-amd64 /usr/local/bin/confd
+ADD files/start.sh /start.sh
+
+RUN chmod +x /usr/local/bin/confd
+RUN chmod +x /start.sh
+
+ADD files/confd /etc/confd
+
+CMD ["/start.sh"]
+```
+start.sh
+```sh
+#!/bin/bash
+set -e  
+
+# if $proxy_domain is not set, then default to $HOSTNAME
+export id_server=${id_server:-"Error, no se pudo setear el parámetro"}
+
+# ensure the following environment variables are set. exit script and container if not set.
+test $id_server
+
+/usr/local/bin/confd -onetime -backend env
+
+echo "Starting Apache"
+exec httpd -DFOREGROUND
+```
+index.html.toml
+```toml
+[template]
+src = "index.html.tmpl"
+dest = "/usr/local/apache2/htdocs/index.html"
+```
+index.html.tmpl
+```tmpl
+server {{ getenv "id_server" }}
+```
 
 
 3. Escriba el archivo docker-compose.yml necesario para el despliegue de la infraestructura.
