@@ -1,11 +1,8 @@
-﻿# examen1-SistemasDistribuidos-ChristianDavidLopezMorcillo
+# examen1-SistemasDistribuidos-ChristianDavidLopezMorcillo
 
-Christian David Lopez Morcillo
+Christian David López Morcillo
 A00312096
-
-
 <b> <p ALIGN=center> EXAMEN 2 - Sistemas Distribuidos <p> </b>
-
 
 1. Consigne los comandos de linux necesarios para el aprovisionamiento de los servicios solicitados. En este punto no debe incluir archivos tipo Dockerfile solo se requiere que usted identifique los comandos o acciones que debe automatizar.
 
@@ -46,7 +43,7 @@ http {
 }
 ```
 
-* Se agregan los permisos necesarios para el cortafuegos.
+* Se agregan los permisos necesarios para el cortafuego.
 
 ```sh
  iptables -I INPUT 5 -p tcp -m state -- NEW -m tcp --dport 8080 -j ACCEPT
@@ -96,7 +93,7 @@ sudo service httpd start
 
 <b> Para el balanceador de cargas: </b>
 
-El balanceador de cargas usado para esta infraestructura es nginx. Se crea una carpeta llamada Nginx que servirá de contexto para el contenedor de nginx. Este contenedor utiliza la imagen nginx del dockerhub. Se escribe el archivo Dockerfile que basicamente remplaza el archivo de configuracion del servicio nginx y luego inicia el servicio de nginx. También se escribe un archivo nginx.conf que se encarga de mapear las direcciones de los servidores web que atenderán peticiones.
+El balanceador de cargas usado para esta infraestructura es nginx. Se crea una carpeta llamada Nginx que servirá de contexto para el contenedor de nginx. Este contenedor utiliza la imagen nginx del dockerhub. Se escribe el archivo Dockerfile que básicamente remplaza el archivo de configuración del servicio nginx y luego inicia el servicio de nginx. También se escribe un archivo nginx.conf que se encarga de mapear las direcciones de los servidores web que atenderán peticiones.
 
 Se escribe el siguiente dockerfile:
 
@@ -105,9 +102,9 @@ Se escribe el siguiente dockerfile:
 FROM nginx
 
 # Autor y mantenedor
-MAINTAINER Christian David Lopez Morcillo
+MAINTAINER Christian David López Morcillo
 
-# Elminar el archivo de configuración por defecto de Nginx
+# Eliminar el archivo de configuración por defecto de Nginx
 RUN rm -v /etc/nginx/nginx.conf
 
 # Copiar el archivo de configuración desde el directorio actual
@@ -121,7 +118,7 @@ RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 CMD service nginx start
 ```
 
- Y se escribe el  archivo de configuracion de nginx:
+ Y se escribe el archivo de configuración de nginx:
  
  ```txt
  worker_processes 3;
@@ -159,9 +156,14 @@ http {
 
 <b>Para el servidor web: </b>
 
+Para la instalación de los 3 servidores web, se usa como servidor de aplicaciones apache. Además, se usa confd para inyección de variables en el html del apache. Confd es una aplicación para inyección de variables en archivos de configuración usando templates y variables del sistema.
+
+
+Primero se escribe el dockerfile para la instalación del apache. Además, se ejecuta el stript start.sh que inyecta variables al html que expondrá el apache.
+
 ```Dockerfile
 FROM httpd
-MAINTAINER Christian Lopez
+MAINTAINER Christian López
 
 ADD files/confd-0.10.0-linux-amd64 /usr/local/bin/confd
 ADD files/start.sh /start.sh
@@ -173,6 +175,10 @@ ADD files/confd /etc/confd
 
 CMD ["/start.sh"]
 ```
+
+
+Luego se escribe el archivo start.sh que se encarga de inyectar la variable encargada de escribir el id del servidor apache a un htlm para poder identificar el servidor de aplicaciones cuando se le hagan peticiones.
+
 start.sh
 ```sh
 #!/bin/bash
@@ -189,12 +195,18 @@ test $id_server
 echo "Starting Apache"
 exec httpd -DFOREGROUND
 ```
+
+Luego se escribe un archivo .toml que se encarga de definir donde deberá ser ubicado el template del htlm.
+
 index.html.toml
 ```toml
 [template]
 src = "index.html.tmpl"
 dest = "/usr/local/apache2/htdocs/index.html"
 ```
+
+Tambien se escribe un template del index.html.
+
 index.html.tmpl
 ```tmpl
 server {{ getenv "id_server" }}
@@ -207,13 +219,13 @@ server {{ getenv "id_server" }}
 
 * Los servidores web utilizan el dockerfile del contexto Web-Apache2 y el balanceador de cargas utiliza el dockerfile del contexto Nginx. 
 
-* Para los contenedores web se hace apertura del pueto 5000. Para el balanceador de cargas se hace mapeo del puerto 8080 del host con el 80 del contenedor.
+* Para los contenedores web se hace apertura del puerto 5000. Para el balanceador de cargas se hace mapeo del puerto 8080 del host con el 80 del contenedor.
 
 * Para cada uno de los servidores web se crea la variable id_server que se usa como variable de entorno del sistema para inyectar variables al html que se instalará en el apache2.
 
 * Adicionalmente se crean y se asignan 2 volumenes, un volumen para el balanceador de cargas llamadao nginx_volume y otro compartido por todos los servidores web llamado apache_volume.
 
-Se detalla el docker-compose final a continuacion:
+Se detalla el docker-compose final a continuación:
 
 ```yml
 version: '2'
@@ -290,6 +302,7 @@ Figura 3: Tercer acceso al balanceador
 
 * Problema 1: Los servidores web no podían ser accedidos desde otras máquinas. 
   Solución 1: Se agregó a iptables las configuraciones necesarias para abrir los puertos que apache necesita para recibir peticiones.
+
 
 
 
