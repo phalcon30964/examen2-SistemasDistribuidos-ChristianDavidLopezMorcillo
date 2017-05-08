@@ -97,15 +97,15 @@ sudo service httpd start
 
 3. Escriba el archivo docker-compose.yml necesario para el despliegue de la infraestructura.
 
-Para el despliegue de la infraestructura planteada, se crea en un docker-compose.yml para 3 servidores web llamados cada uno serverX , donde X es el id del servidor, y un balanceador de cargas llamado nginx. 
+* Para el despliegue de la infraestructura planteada, se crea en un docker-compose.yml para 3 servidores web llamados cada uno serverX , donde X es el id del servidor, y un balanceador de cargas llamado nginx. 
 
-Los servidores web utilizan el dockerfile del contexto Web-Apache2 y el balanceador de cargas utiliza el dockerfile del contexto Nginx. 
+* Los servidores web utilizan el dockerfile del contexto Web-Apache2 y el balanceador de cargas utiliza el dockerfile del contexto Nginx. 
 
-Para los contenedores web se hace apertura del pueto 5000. Para el balanceador de cargas se hace mapeo del puerto 8080 del host con el 80 del contenedor.
+* Para los contenedores web se hace apertura del pueto 5000. Para el balanceador de cargas se hace mapeo del puerto 8080 del host con el 80 del contenedor.
 
-Para cada uno de los servidores web se crea la variable id_server que se usa como variable de entorno del sistema para inyectar variables al html que se instalará en el apache2.
+* Para cada uno de los servidores web se crea la variable id_server que se usa como variable de entorno del sistema para inyectar variables al html que se instalará en el apache2.
 
-Adicionalmente se crean y se asignan 2 volumenes, un volumen para el balanceador de cargas llamadao nginx_volume y otro compartido por todos los servidores web llamado apache_volume.
+* Adicionalmente se crean y se asignan 2 volumenes, un volumen para el balanceador de cargas llamadao nginx_volume y otro compartido por todos los servidores web llamado apache_volume.
 
 Se detalla el docker-compose final a continuacion:
 
@@ -172,7 +172,7 @@ Se publica el examen en el repositorio https://github.com/phalcon30964/examen2-S
 
 5. Incluya evidencias que muestran el funcionamiento de lo solicitado
 
-Se muestra capturas de 3 accesos a al balanceador en la carpeta evidencias, podemos ver como el balanceador redirige la petición a un servidor diferente en cada ocasión.
+* Se muestra capturas de 3 accesos a al balanceador en la carpeta evidencias, podemos ver como el balanceador redirige la petición a un servidor diferente en cada ocasión.
 
 Figura 1: Primer acceso al balanceador
 
@@ -182,8 +182,8 @@ Figura 3: Tercer acceso al balanceador
 
 6. Documente algunos de los problemas encontrados y las acciones efectuadas para su solución al aprovisionar la infraestructura y aplicaciones 
 
-Problema 1: Los servidores web no podían ser accedidos desde otras máquinas. 
-Solución 1: Se agregó a iptables las configuraciones necesarias para abrir los puertos que apache necesita para recibir peticiones.
+* Problema 1: Los servidores web no podían ser accedidos desde otras máquinas. 
+  Solución 1: Se agregó a iptables las configuraciones necesarias para abrir los puertos que apache necesita para recibir peticiones.
 
 
 
