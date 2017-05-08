@@ -1,19 +1,18 @@
-FROM ubuntu:16.04
-MAINTAINER cdlopezmorcillo@gmail.com
+# Se pasa la imagen base
+FROM nginx
 
-ADD config/my_key.pub /tmp
+# Autor y mantenedor
+MAINTAINER Christian David Lopez Morcillo
 
-#Configure repository
-RUN apt-key add /tmp/my_key.pub 
-RUN rm -f /tmp/my_key.pub 
-RUN echo "deb http://192.168.131.121:8080/ xenial main" > sources.list 
-RUN chmod 777 /tmp
+# Elminar el archivo de configuración por defecto de Nginx
+RUN rm -v /etc/nginx/nginx.conf
 
-#Install packages
-RUN apt-get clean
-RUN apt-get update -y 
-RUN apt-get install postgresql -y
-RUN apt-get install postgresql-contrib -y
+# Copiar el archivo de configuración desde el directorio actual
+ADD nginx.conf /etc/nginx/
 
-#Giving permisions
-EXPOSE 5432
+# Agregar "daemon off;" en el comienzo de la configuración
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+
+# Setear el comando de defecto para ejecutar
+# cuando se crea un nuevo contenedor
+CMD service nginx start
