@@ -1,4 +1,4 @@
-# examen1-SistemasDistribuidos-ChristianDavidLopezMorcillo
+﻿xamen1-SistemasDistribuidos-ChristianDavidLopezMorcillo
 
 Christian David López Morcillo
 A00312096
@@ -209,7 +209,7 @@ Tambien se escribe un template del index.html.
 
 index.html.tmpl
 ```tmpl
-server {{ getenv "id_server" }}
+Este es el servidor numero: {{ getenv "id_server" }}
 ```
 
 
