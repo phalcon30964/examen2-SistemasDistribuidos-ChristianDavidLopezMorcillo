@@ -29,6 +29,7 @@ sudo yum install nginx
 ```
 
 * Se crea el archivo /etc/nginx/nginx.conf y allí se especifica la ip de los servidores que atenderán las peticione, de la siguiente forma:
+
 ```txt
 http {
     upstream webservers {
@@ -122,7 +123,7 @@ CMD service nginx start
 
  Y se escribe el  archivo de configuracion de nginx:
  
- ```json
+ ```txt
  worker_processes 3;
  
 events { worker_connections 1024; }
