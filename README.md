@@ -167,7 +167,7 @@ volumes:
 
 4. Publicar en un repositorio de github los archivos para el aprovisionamiento junto con un archivo de extensión .md donde explique brevemente como realizar el aprovisionamiento.
 
-Se publica el examen en el repositorio https://github.com/phalcon30964/examen2-SistemasDistribuidos-ChristianDavidLopezMorcillo
+* Se publica el examen en el repositorio https://github.com/phalcon30964/examen2-SistemasDistribuidos-ChristianDavidLopezMorcillo
 
 
 5. Incluya evidencias que muestran el funcionamiento de lo solicitado
