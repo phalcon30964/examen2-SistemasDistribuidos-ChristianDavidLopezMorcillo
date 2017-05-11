@@ -237,10 +237,8 @@ services:
       dockerfile: Dockerfile
     environment:
       - id_server=1
-    expose:
-      - "5000"
     volumes:
-      - apache_volume:/apache_volume
+      - apache_volume1:/usr/local/apache2/htdocs/
 
   server2:
     build:
@@ -248,10 +246,8 @@ services:
       dockerfile: Dockerfile
     environment:
        - id_server=2
-    expose:
-       - "5000"
     volumes:
-       - apache_volume:/apache_volume
+       - apache_volume2:/usr/local/apache2/htdocs/
 
   server3:
     build:
@@ -259,10 +255,8 @@ services:
       dockerfile: Dockerfile
     environment:
       - id_server=3
-    expose:
-      - "5000"
     volumes:
-      - apache_volume:/apache_volume
+      - apache_volume3:/usr/local/apache2/htdocs/
 
   nginx:
     build:
@@ -270,16 +264,13 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:80"
-    links:
-      - server1
-      - server2
-      - server3
     volumes:
-      - nginx_volume:/nginx_volume
+      - nginx_volume:/etc/nginx/
 
 volumes:
-    apache_volume:
-
+    apache_volume1:
+    apache_volume2:
+    apache_volume3:
     nginx_volume:
 ```
 
