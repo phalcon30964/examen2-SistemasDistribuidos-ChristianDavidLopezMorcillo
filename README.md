@@ -303,6 +303,17 @@ Figura 3: Tercer acceso al balanceador
 * Problema 1: Los servidores web no podían ser accedidos desde otras máquinas. 
   Solución 1: Se agregó a iptables las configuraciones necesarias para abrir los puertos que apache necesita para recibir peticiones.
 
+* Problema 2: Un volumen no podian añadirse a los servicios. 
+  Solución 2: Se crearon volumenes separados para cada servicio. De esta forma, cada contenedor tiene su volumen propio.
+
+* Problema 3: El navegador solo cargaba 1 sola vez la pagina del servidor 3. 
+  Solución 3: Se deshabilitó el cacheo y se notó que no se mostraba porque se hacia cacheo del archivo del servidor 2.
+
+* Problema 3: En el dockerfile el nombre de un service no dejaba tener mayusculas. 
+  Solución 3: Se puso minusculas todo los nombres de los contenedores.
+
+* Problema 4: El balanceador de cargas no pidia ser accedido. 
+  Solución 4: Se agregó el comando ports dentro del docker-compose.yml para exponer el puerto 80 del contenedor al puerto 8080 del host.
 
 
 
